@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Althea AI</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <style>
+        /* Global Sans-Serif Font */
+        body, button, input {
+            font-family: 'Sans-Serif';
+        }
+
+        /* Move Container to bottom-middle */
+        .chat {
+            margin-top: 5%;
+        }
+
+        /* Existing Styles */
+        .msg_cotainer_send {
+            background-color: #DCF8C6;
+            border-radius: 10px;
+            padding: 10px;
+            max-width: 80%;
+        }
+        .msg_cotainer_assistant {
+/*            background-color: #8DC3DE;*/
+            background-color: whitesmoke;
+            border-radius: 10px;
+            padding: 10px;
+            max-width: 80%;
+        }
+        .reset-button {
+            position: absolute;  /* atau gunakan 'fixed' tergantung dari kebutuhan Anda */
+            top: 10px;
+            right: 10px;
+            z-index: 1;  /* Optional: supaya tombol tetap terlihat di atas elemen lain */
+        }
+        .reset-button-container {
+            position: relative;
+        }
+        .card {
+/*            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');*/
+            background-size: cover;  /* untuk memastikan gambar menutupi seluruh area */
+            background-repeat: no-repeat;  /* untuk memastikan gambar tidak berulang */
+        }
+
+        .msg_head {
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.1));
+            position: relative;
+            overflow: hidden;
+        }
+        .msg_head::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background-image: url("data:image/svg+xml;utf8,<svg>...</svg>"); /* Use an SVG for wave effect */
+        }
+
+        /* 2. 3D Shadow Effect */
+        .card {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 3. Fixed 16:9 ratio */
+        .chat {
+            position: relative;
+            width: 100%;
+            padding-bottom: 40%; /* 16:9 */
+        }
+        .card {
+            position: relative;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+        }
+
+        /* Set height for the chat container and allow overflow scroll */
+        .msg_card_body {
+            height: 600px;  /* Contoh tinggi, Anda bisa menyesuaikan sesuai kebutuhan */
+            overflow-y: auto;
+        }
+
+        /* Make header and footer sticky */
+        .card-header, .card-footer {
+            position: sticky;
+        }
+
+        .card-header {
+            top: 0;
+            z-index: 10;
+        }
+
+        .card-footer {
+            bottom: 0;
+            z-index: 10;
+        }
+        .reset-button-left {
+            position: absolute;
+            top: 35px;
+            left: 420px;
+            z-index: 20;  /* Optional: supaya tombol tetap terlihat di atas elemen lain */
+        }
+
+    </style>
+
+</head>
+<body>
+    <div class="container-fluid h-100 reset-button-container">
+        <div class="row justify-content-center h-100">
+            <div class="col-md-8 col-xl-6 chat">
+                <div class="card">
+                    <div class="card-header msg_head">
+                        <div class="d-flex bd-highlight">
+                            <div class="img_cont">
+                                <img src="https://cdn-icons-png.flaticon.com/512/6190/6190680.png" class="rounded-circle user_img" style="width:50px; height:50px;">
+                            </div>
+                            <div class="user_info" style="margin-left: 10px;">
+                                <span style="color: whitesmoke; font-weight: bold;"> Althea AI</span>
+                                <p style="color: whitesmoke;">Saya siap membantu dengan pertanyaan medis kamu</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body msg_card_body" id="messageBox">
+                        {% for message in messages %}
+                            {% if message.role == "user" %}
+                                {% if "content" in message %}
+                                    <div class="d-flex justify-content-end mb-4">
+                                        <div class="msg_cotainer_send">
+                                           <!--  <small>
+                                                <img src="https://cdn-icons-png.flaticon.com/512/4086/4086679.png" alt="User Icon" style="width:20px; height:20px; font-weight: bold;"> User
+                                            </small><br> -->
+                                            {{ message.content }}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% elif message.role == "assistant" %}
+                                <div class="d-flex justify-content-start mb-4">
+                                    <div class="msg_cotainer_assistant">
+                                        <!-- <small>
+                                            <img src="https://cdn-icons-png.flaticon.com/512/6190/6190680.png" alt="DokterAI Icon" class="rounded-circle user_img" style="width:20px; height:20px; font-weight: bold;"> Althea AI
+                                        </small><br> -->
+                                        {{ message.content }}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+
+                    <div class="card-footer">
+                        <form action="/" method="post">
+                            <div class="input-group">
+                                <input type="text" class="form-control type_msg" name="user_input" placeholder="Type your message..." required>
+                                <div class="input-group-append">
+                                    <button type="submit" class="input-group-text send_btn"><i class="fas fa-location-arrow"></i></button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+    <form action="/reset" method="post" class="reset-button-left">
+        <button type="submit" class="btn btn-danger">Reset Chat</button>
+    </form>
+
+    <script>
+        // Scroll to the bottom of the message box
+        const messageBox = document.getElementById('messageBox');
+        messageBox.scrollTop = messageBox.scrollHeight;
+    </script>
+
+</body>
+</html>
+
